@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
+import { useSpring, animated } from 'react-spring'
 
 const DateBlock = (props) => {
 
 
-
+    const blockAnimation = useSpring({from:{top: -20}, to:{top: 0}, config:{duration: props.index * 20}})
 
     function dateBlockStyle(){
 
@@ -48,7 +49,7 @@ const DateBlock = (props) => {
     }
 
 
-    return ( <div className={dateBlockStyle()} onClick={changeDate} ><div className="date-block-number center-y">{props.date}</div></div> );
+    return ( <animated.div style={blockAnimation} className={dateBlockStyle()} onClick={changeDate} ><div className="date-block-number center-y">{props.date}</div></animated.div> );
 }
  
 export default DateBlock;

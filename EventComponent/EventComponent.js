@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { useSpring, animated } from 'react-spring'
 import "./EventComponent.css"
 import DateBlock from "./SubComponents/DateBlock"
 const EventComponent = () => {
@@ -10,15 +11,17 @@ const EventComponent = () => {
     const [calenderStatus, setCalenderStatus] = useState('off')
 
 
+
+    const componentAnimation = useSpring({from: {opacity: 0}, to:{opacity: 1}})
+
+
     useEffect(() => {
 
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');
         var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
         var yyyy = today.getFullYear();
-        
         today = mm + '/' + dd + '/' + yyyy;
-
         setSelectedDate(today)
 
 
@@ -66,10 +69,7 @@ const EventComponent = () => {
         
         let theDates = []
         for(i = 0; i < 35; i++){
-
             theDates.push(i)
-
-
         }
 
 
@@ -80,13 +80,9 @@ const EventComponent = () => {
                 <div className="change-months-container"></div>
                 <div className="dates-container">
 
-                {theDates.map((date) => <DateBlock date={date} selectedDate={selectedDate} setDate={setSelectedDate} closeCalender={setCalenderStatus}/>)}
+                {theDates.map((date, index) => <DateBlock date={date} selectedDate={selectedDate} setDate={setSelectedDate} closeCalender={setCalenderStatus} index={index}/>)}
 
                 </div>
-
-
-
-
             </div>)
         }
 
@@ -94,8 +90,32 @@ const EventComponent = () => {
 
     }
 
+    function calenderAnimation(time){
 
-    return ( <div className="event-component-container">
+        let calenderElement = document.querySelector('.calender-container');
+        if(calenderStatus === 'off'){
+
+            calenderElement.style.opacity = '1';
+            calenderElement.style.height = '300px';
+
+        }
+
+        else {
+
+            setTimeout(() => {
+                calenderElement.style.opacity = '0';
+                calenderElement.style.height = '0px';
+            }, time)
+           
+        }
+
+      
+            
+
+    }
+
+
+    return ( <animated.div style={componentAnimation} className="event-component-container">
 
             <div className="component-header">Create Event</div>
             <div className="inputs-container">
@@ -124,9 +144,36 @@ const EventComponent = () => {
             </div>
             <div className="date-picker-container">
                 <div className="date-header">Date</div>
-                <div className="date-picker" onClick={() => {setCalenderStatus('on')}}>{selectedDate}{renderCalender()}</div>
-             
+                <div className="date-picker-wrapper">
+                    <div className="date-picker" onClick={() => {
+
+                        if(calenderStatus === 'off'){
+                            setCalenderStatus('on'); 
+                            setTimeout(() =>{calenderAnimation(100)}, 10) 
+                        }
+                        else if(calenderStatus === 'on'){
+                            calenderAnimation(100) 
+                            setTimeout(() => {
+                                setCalenderStatus('off'); 
+                           
+
+                            }, 400) 
+                        } 
+                        setTimeout(() =>{}, 10) 
+                        }}>{selectedDate}</div>
+                {renderCalender()}
                 </div>
+                
+                <div className="drop-menus-container">
+                    <div className="button-wrapper">
+                        <div className="begin-drop-down drop-down-button">12:00</div>
+                    </div>
+                    <div className="button-wrapper">
+                        <div className="end-drop-down drop-down-button">12:00</div>
+                    </div>
+                </div>
+             
+            </div>
             <div className="component-footer">
                 <div className="button-container center-all">
                 <button className="create-button">Create</button>
@@ -135,7 +182,7 @@ const EventComponent = () => {
                 </div>
             </div>
 
-    </div> );
+    </animated.div> );
 }
  
 export default EventComponent;
